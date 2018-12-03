@@ -1,8 +1,8 @@
 package com.github.jsonzou.jmockdata.mocker;
 
-import com.github.jsonzou.jmockdata.MockConfig;
+import com.github.jsonzou.jmockdata.DataConfig;
 import com.github.jsonzou.jmockdata.Mocker;
-import com.github.jsonzou.jmockdata.annotation.MockIgnore;
+
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -21,18 +21,17 @@ public class BaseMocker<T> implements Mocker<T> {
   }
 
   @Override
-  public T mock(MockConfig mockConfig) {
+  public T mock(DataConfig mockConfig) {
     Mocker mocker;
     if (type instanceof ParameterizedType) {
       mocker = new GenericMocker((ParameterizedType) type);
     } else if (type instanceof GenericArrayType) {
       mocker = new ArrayMocker(type);
     } else if (type instanceof TypeVariable) {
-      mocker = new BaseMocker(mockConfig.getVariableType(((TypeVariable) type).getName()));
+      mocker = new BaseMocker(mockConfig.globalConfig().getVariableType(((TypeVariable) type).getName()));
     } else {
       mocker = new ClassMocker((Class) type, genericTypes);
     }
     return (T) mocker.mock(mockConfig);
   }
-
 }

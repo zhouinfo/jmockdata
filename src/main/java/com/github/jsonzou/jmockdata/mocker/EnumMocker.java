@@ -1,5 +1,6 @@
 package com.github.jsonzou.jmockdata.mocker;
 
+import com.github.jsonzou.jmockdata.DataConfig;
 import com.github.jsonzou.jmockdata.MockConfig;
 import com.github.jsonzou.jmockdata.MockException;
 import com.github.jsonzou.jmockdata.Mocker;
@@ -18,20 +19,17 @@ public class EnumMocker<T extends Enum> implements Mocker<Object> {
   }
 
   @Override
-  public T mock(MockConfig mockConfig) {
-    Enum[] enums = mockConfig.getcacheEnum(clazz.getName());
+  public T mock(DataConfig mockConfig) {
+
+    Enum[] enums = mockConfig.globalConfig().getcacheEnum(clazz.getName());
     if (enums == null) {
-      try {
-        Field field = clazz.getDeclaredField("$VALUES");
-        field.setAccessible(true);
-        enums = (Enum[]) field.get(clazz);
+      //  Field field = clazz.getDeclaredField("$VALUES");
+       // field.setAccessible(true);
+        enums =(Enum[]) clazz.getEnumConstants();
         if (enums.length == 0) {
           throw new MockException("空的enum不能模拟");
         }
-        mockConfig.cacheEnum(clazz.getName(), enums);
-      } catch (NoSuchFieldException | IllegalAccessException e) {
-        throw new MockException(e);
-      }
+        mockConfig.globalConfig().cacheEnum(clazz.getName(), enums);
     }
     return (T) enums[RandomUtils.nextInt(0, enums.length)];
   }
